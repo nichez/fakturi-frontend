@@ -11,8 +11,11 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import ViewListIcon from '@material-ui/icons/ViewList';
-import DescriptionIcon from '@material-ui/icons/Description';
+import GroupIcon from '@material-ui/icons/Group';
 import ReceiptIcon from '@material-ui/icons/Receipt';
+import ListAltIcon from '@material-ui/icons/ListAlt';
+import FormatListNumberedIcon from '@material-ui/icons/FormatListNumbered';
+import FindInPageIcon from '@material-ui/icons/FindInPage';
 
 const drawerWidth = 240;
 
@@ -50,53 +53,204 @@ const Sidebar = (props) => {
               button
               key={1}
               selected={location.pathname === '/article/list'}
+              style={{
+                backgroundColor:
+                  location.pathname === '/article/list'
+                    ? 'rgba(223, 242, 239, 0.7)'
+                    : null,
+                color:
+                  location.pathname === '/article/list'
+                    ? 'rgb(12, 19, 20)'
+                    : null,
+                borderRadius: 10,
+                marginRight: location.pathname === '/article/list' ? 20 : 0,
+              }}
             >
               <ListItemIcon className={classes.icon}>
-                <ReceiptIcon />
+                <ViewListIcon
+                  color={location.pathname === '/article/list' ? 'primary' : ''}
+                />
               </ListItemIcon>
-              <ListItemText primary='Articles' />
+              <ListItemText primary='Artikli' />
             </ListItem>
           </NavLink>
-          <Divider variant='middle' style={{backgroundColor: location.pathname === '/article/list' ? '#ccc' : null}} />
+
           <NavLink to='/delovniPartneri/list' className={classes.link}>
             <ListItem
               button
               key={1}
               selected={location.pathname === '/delovniPartneri/list'}
+              style={{
+                backgroundColor:
+                  location.pathname === '/delovniPartneri/list'
+                    ? 'rgba(223, 242, 239, 0.7)'
+                    : null,
+                color:
+                  location.pathname === '/delovniPartneri/list'
+                    ? 'rgb(12, 19, 20)'
+                    : null,
+                borderRadius: 10,
+              }}
             >
               <ListItemIcon className={classes.icon}>
-                <ReceiptIcon />
+                <GroupIcon
+                  color={
+                    location.pathname === '/delovniPartneri/list'
+                      ? 'primary'
+                      : ''
+                  }
+                />
               </ListItemIcon>
               <ListItemText primary='Delovni Partneri' />
             </ListItem>
           </NavLink>
-          <Divider variant='middle' style={{backgroundColor: location.pathname === '/delovniPartneri/list' ? '#ccc' : null}} />
-          <NavLink to='/invoice/list' className={classes.link}>
+
+          <NavLink
+            to={{ pathname: '/promet/list/fakturi' }}
+            className={classes.link}
+          >
             <ListItem
               button
               key={1}
-              selected={location.pathname === '/invoice/list'}
+              selected={location.pathname === '/promet/list/fakturi'}
+              style={{
+                backgroundColor:
+                  location.pathname === '/promet/list/fakturi'
+                    ? 'rgba(223, 242, 239, 0.7)'
+                    : null,
+                color:
+                  location.pathname === '/promet/list/fakturi'
+                    ? 'rgb(12, 19, 20)'
+                    : null,
+                borderRadius: 10,
+              }}
             >
               <ListItemIcon className={classes.icon}>
-                <ViewListIcon />
+                <ReceiptIcon
+                  color={
+                    location.pathname === '/promet/list/fakturi'
+                      ? 'primary'
+                      : ''
+                  }
+                />
               </ListItemIcon>
-              <ListItemText primary='Invoices' />
+              <ListItemText primary='Fakturi' />
             </ListItem>
           </NavLink>
-          <Divider variant='middle' style={{backgroundColor: location.pathname === '/invoice/list' ? '#ccc' : null}} />
-          <NavLink to='/invoice/add' className={classes.link}>
+
+          <NavLink
+            to={{ pathname: '/promet/list/priemnici' }}
+            className={classes.link}
+          >
             <ListItem
               button
-              key={2}
-              selected={location.pathname === '/invoice/add'}
+              key={1}
+              selected={location.pathname === '/promet/list/priemnici'}
+              style={{
+                backgroundColor:
+                  location.pathname === '/promet/list/priemnici'
+                    ? 'rgba(223, 242, 239, 0.7)'
+                    : null,
+                color:
+                  location.pathname === '/promet/list/priemnici'
+                    ? 'rgb(12, 19, 20)'
+                    : null,
+                borderRadius: 10,
+              }}
             >
               <ListItemIcon className={classes.icon}>
-                <DescriptionIcon />
+                <ListAltIcon
+                  color={
+                    location.pathname === '/promet/list/priemnici'
+                      ? 'primary'
+                      : ''
+                  }
+                />
               </ListItemIcon>
-              <ListItemText primary='Add Invoice' />
+              <ListItemText primary='Priemnici' />
             </ListItem>
           </NavLink>
-          <Divider variant='middle' style={{backgroundColor: location.pathname === '/invoice/add' ? '#ccc' : null}} />
+
+          <NavLink
+            to={{ pathname: '/promet/list/smetki' }}
+            className={classes.link}
+          >
+            <ListItem
+              button
+              key={1}
+              selected={location.pathname === '/promet/list/smetki'}
+              style={{
+                backgroundColor:
+                  location.pathname === '/promet/list/smetki'
+                    ? 'rgba(223, 242, 239, 0.7)'
+                    : null,
+                color:
+                  location.pathname === '/promet/list/smetki'
+                    ? 'rgb(12, 19, 20)'
+                    : null,
+                borderRadius: 10,
+              }}
+            >
+              <ListItemIcon className={classes.icon}>
+                <ReceiptIcon
+                  color={
+                    location.pathname === '/promet/list/smetki' ? 'primary' : ''
+                  }
+                />
+              </ListItemIcon>
+              <ListItemText primary='Smetki' />
+            </ListItem>
+          </NavLink>
+
+          {/* <NavLink to={{ pathname: '/stavki/list' }} className={classes.link}>
+            <ListItem
+              button
+              key={1}
+              selected={location.pathname === '/stavki/list'}
+              style={{
+                backgroundColor:
+                  location.pathname === '/stavki/list'
+                    ? 'rgba(223, 242, 239, 0.7)'
+                    : null,
+                color:
+                  location.pathname === '/stavki/list'
+                    ? 'rgb(12, 19, 20)'
+                    : null,
+                borderRadius: 10,
+              }}
+            >
+              <ListItemIcon className={classes.icon}>
+                <FormatListNumberedIcon
+                  color={location.pathname === '/stavki/list' ? 'primary' : ''}
+                />
+              </ListItemIcon>
+              <ListItemText primary='Stavki' />
+            </ListItem>
+          </NavLink> */}
+
+          <NavLink to={{ pathname: '/prikaz' }} className={classes.link}>
+            <ListItem
+              button
+              key={1}
+              selected={location.pathname === '/prikaz'}
+              style={{
+                backgroundColor:
+                  location.pathname === '/prikaz'
+                    ? 'rgba(223, 242, 239, 0.7)'
+                    : null,
+                color:
+                  location.pathname === '/prikaz' ? 'rgb(12, 19, 20)' : null,
+                borderRadius: 10,
+              }}
+            >
+              <ListItemIcon className={classes.icon}>
+                <FindInPageIcon
+                  color={location.pathname === '/prikaz' ? 'primary' : ''}
+                />
+              </ListItemIcon>
+              <ListItemText primary='Prikaz' />
+            </ListItem>
+          </NavLink>
         </List>
       </List>
     </Drawer>

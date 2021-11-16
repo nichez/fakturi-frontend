@@ -1,13 +1,7 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { connect } from 'react-redux';
-import { makeStyles } from '@material-ui/core/styles';
 import {
   Button,
-  Radio,
-  FormControl,
-  FormControlLabel,
   Divider,
-  RadioGroup,
   Grid,
   Table,
   TableHead,
@@ -24,7 +18,7 @@ import {
   KeyboardDatePicker,
 } from '@material-ui/pickers';
 import DateFnsUtils from '@date-io/date-fns';
-import { set } from 'date-fns';
+import CircularProgress from '@material-ui/core/CircularProgress';
 
 import useStyles from '../InvoiceStyles';
 import {
@@ -206,21 +200,23 @@ const InvoiceEditor = (props) => {
   const SetTotalWithoutDdv = () => {
     let total = 0;
     stavki.map((item) => {
-      total += item.vkupnaCenaBezDdv;
+      total += +item.vkupnaCenaBezDdv;
       return item;
     });
-    return <p className={classes.totalCostLabels}>{total ? total : 0}</p>;
+    return (
+      <p className={classes.totalCostLabels}>{total ? total.toFixed(2) : 0}</p>
+    );
   };
 
   const SetTotalWithDdv = () => {
     let total = 0;
     stavki.map((item) => {
-      total += item.iznos;
+      total += +item.iznos;
       return item;
     });
     return (
       <p className={classes.totalCostLabels}>
-        <strong>{total ? total : 0}</strong>
+        <strong>{total ? total.toFixed(2) : 0}</strong>
       </p>
     );
   };
@@ -228,10 +224,13 @@ const InvoiceEditor = (props) => {
   const SetTotalDdv = () => {
     let total = 0;
     stavki.map((item) => {
-      total += item.presmetanDdv;
+      total += +item.presmetanDdv;
       return item;
     });
-    return <p className={classes.totalCostLabels}>{total ? total : 0}</p>;
+    console.log('TOTALLL ', total);
+    return (
+      <p className={classes.totalCostLabels}>{total ? total.toFixed(2) : 0}</p>
+    );
   };
 
   const onCreateStavki = async (path, body, promet) => {
@@ -268,14 +267,6 @@ const InvoiceEditor = (props) => {
   };
 
   const handleSubmit = () => {
-    console.log('handleSubmit');
-    console.log('izbranPromet', izbranPromet);
-    console.log('izbranPromet TYPE', typeof izbranPromet);
-    console.log('izbranPromet PROPS NEW', props.isNewInvoice);
-    console.log('izbranPartner', izbranPartner);
-    console.log('broj', broj);
-    console.log('stavki', stavki);
-    console.log('datum', formatDate(date));
     setLoading(true);
     if (!(izbranPromet && date && izbranPartner)) {
       setLoading(false);
@@ -299,15 +290,13 @@ const InvoiceEditor = (props) => {
 
     if (props.isNewInvoice && typeof izbranPromet === 'string') {
       console.log('props.isNewInvoice IF ', props.isNewInvoice);
-      setLoading(false);
-      // onCreatePromet('/promet', novPromet);
       onCreateStavki('/stavki', stavki, novPromet);
-      props.history.push(`/invoice/${novPromet.brojNaFaktura}`);
-      props.toggleInvoiceEditor();
+      props.history.push(`/promet/${novPromet.brojNaFaktura}`);
+      props.togglePrometEditor();
     } else {
       console.log('props.isNewInvoice ELSE ', props.isNewInvoice);
       setLoading(false);
-      props.toggleInvoiceEditor();
+      props.togglePrometEditor();
     }
   };
 
@@ -318,23 +307,31 @@ const InvoiceEditor = (props) => {
       onError={(errors) => handleSubmit()}
     >
       <div className={classes.rightButttons}>
-        <Button
-          type='button'
-          className={classes.cancelButton}
-          variant='text'
-          onClick={() => props.toggleInvoiceEditor()}
-        >
-          Cancel
-        </Button>
-        <Button
-          type='submit'
-          className='py-8'
-          variant='contained'
-          color='primary'
-          disabled={loading}
-        >
-          Save
-        </Button>
+        {loading ? (
+          <div className={classes.spinner}>
+            <CircularProgress color='secondary' />
+          </div>
+        ) : (
+          <div>
+            <Button
+              type='button'
+              className={classes.cancelButton}
+              variant='text'
+              onClick={() => props.togglePrometEditor()}
+            >
+              Cancel
+            </Button>
+            <Button
+              type='submit'
+              className='py-8'
+              variant='contained'
+              color='primary'
+              disabled={loading}
+            >
+              Save
+            </Button>
+          </div>
+        )}
       </div>
 
       <div className={classes.orderInfo}>
@@ -390,12 +387,7 @@ const InvoiceEditor = (props) => {
       <Divider className={classes.divider} />
 
       {izbranPartner && (
-        <Grid
-          className='px-16 py-20'
-          container
-          justify='space-between'
-          spacing={4}
-        >
+        <Grid container justify='space-between' spacing={4}>
           <Grid item>
             <div>
               <h4>Info za partnerot</h4>

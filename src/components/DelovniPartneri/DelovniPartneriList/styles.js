@@ -21,6 +21,12 @@ const useStyles = makeStyles((theme) => ({
   title: {
     marginBottom: theme.spacing(2),
   },
+  tableRow: {
+    '&:hover': {
+      backgroundColor: 'rgba(0, 0, 0, 0.08)',
+    },
+    cursor: 'pointer',
+  },
 }));
 
 export default useStyles;

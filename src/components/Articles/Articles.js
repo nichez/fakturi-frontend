@@ -12,6 +12,8 @@ import {
   Typography,
   TextField,
 } from '@material-ui/core';
+import CheckCircleIcon from '@material-ui/icons/CheckCircle';
+import CancelIcon from '@material-ui/icons/Cancel';
 import EditIcon from '@material-ui/icons/Edit';
 import DeleteIcon from '@material-ui/icons/Delete';
 import Snackbar from '@material-ui/core/Snackbar';
@@ -27,8 +29,10 @@ const Articles = (props) => {
 
   const [articles, setArticles] = useState([]);
   const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [openSnackbarDelete, setOpenSnackbarDelete] = useState(false);
   const [search, setSearch] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [page, setPage] = useState(0);
   const [shouldOpenEditorDialog, setShouldOpenEditorDialog] = useState(false);
@@ -87,9 +91,15 @@ const Articles = (props) => {
     setShouldOpenEditorDialog(false);
   };
 
-  const handleDeleteDialogClose = () => {
+  const handleDeleteDialogClose = (type = '') => {
+    console.log('HANDLE CLOSE TYPE ', type);
     onFetchArticles();
     setShouldOpenDeleteDialog(false);
+    if (type === 'error') {
+      console.log('TYPE Error ', type);
+      setErrorMessage('Greshka pri brishenje na artikal');
+      setOpenSnackbarDelete(true);
+    }
   };
 
   const Alert = (props) => {
@@ -102,6 +112,14 @@ const Articles = (props) => {
     }
 
     setOpenSnackbar(false);
+  };
+
+  const handleCloseSnackbarDelete = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    setOpenSnackbarDelete(false);
   };
 
   return (
@@ -121,7 +139,7 @@ const Articles = (props) => {
         <form noValidate autoComplete='off'>
           <TextField
             id='filter-articles'
-            label='Search Articles'
+            label='Prebaruvaj Artikli'
             fullWidth
             value={search}
             onChange={(e) => handleSearch(e.target.value)}
@@ -171,6 +189,7 @@ const Articles = (props) => {
                 .filter(
                   (article) =>
                     article.shifra
+                      .toString()
                       .toLowerCase()
                       .indexOf(search.toLowerCase()) !== -1 ||
                     article.ime.toLowerCase().indexOf(search.toLowerCase()) !==
@@ -194,7 +213,13 @@ const Articles = (props) => {
                     <TableCell align='left'>
                       {article.tarifen_broj_ddv}%
                     </TableCell>
-                    <TableCell>{article.mkd_proizvod}</TableCell>
+                    <TableCell>
+                      {article.mkd_proizvod === 'DA' ? (
+                        <CheckCircleIcon style={{ color: '#4BB543' }} />
+                      ) : (
+                        <CancelIcon color='error' />
+                      )}
+                    </TableCell>
                     <TableCell className='px-0' align='left'>
                       {article.cena} MKD
                     </TableCell>
@@ -244,7 +269,8 @@ const Articles = (props) => {
           handleClose={handleDeleteDialogClose}
           onYesClick={() => {}}
           text='Дали сигурно сакате да го избришете артиклот ?'
-          article={currentArticle}
+          item={currentArticle}
+          path='articles'
         />
       )}
       <Snackbar
@@ -254,6 +280,16 @@ const Articles = (props) => {
       >
         <Alert onClose={handleCloseSnackbar} severity='success'>
           {successMessage}
+        </Alert>
+      </Snackbar>
+
+      <Snackbar
+        open={openSnackbarDelete}
+        autoHideDuration={3000}
+        onClose={handleCloseSnackbarDelete}
+      >
+        <Alert onClose={handleCloseSnackbarDelete} severity='error'>
+          {errorMessage}
         </Alert>
       </Snackbar>
     </div>

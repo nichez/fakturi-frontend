@@ -10,16 +10,23 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import { deleteRequest } from '../../services/httpService';
 
 const ConfirmationDialog = (props) => {
-  const { open, handleClose, article, text } = props;
+  const { open, handleClose, item, text, path } = props;
   const [isLoading, setIsLoading] = useState(false);
 
   const handleDelete = async () => {
     setIsLoading(true);
-    const result = await deleteRequest('/articles', `/${article.shifra}`);
+    const result = await deleteRequest(`/${path}`, `/${item.shifra}`);
     if (result.status === 200) {
       setTimeout(() => {
         setIsLoading(false);
         handleClose();
+      }, 1000);
+    }
+    else {
+      console.log('ERROR REQ DEL ', result);
+      setTimeout(() => {
+        setIsLoading(false);
+        handleClose('error');
       }, 1000);
     }
   };
@@ -34,7 +41,7 @@ const ConfirmationDialog = (props) => {
         {text}
       </DialogTitle>
       <DialogContent>
-        <DialogContentText>{article.ime}</DialogContentText>
+        <DialogContentText>{item.ime}</DialogContentText>
       </DialogContent>
       <DialogActions>
         {isLoading ? (

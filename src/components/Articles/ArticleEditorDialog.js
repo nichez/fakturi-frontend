@@ -1,16 +1,18 @@
-import React, { useState, useRef, useCallback } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
   Dialog,
   Button,
   Grid,
   FormControlLabel,
-  Switch,
   Typography,
   Checkbox,
-  Divider,
 } from '@material-ui/core';
 import { ValidatorForm, TextValidator } from 'react-material-ui-form-validator';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import MenuItem from '@material-ui/core/MenuItem';
+import FormHelperText from '@material-ui/core/FormHelperText';
+import FormControl from '@material-ui/core/FormControl';
+import Select from '@material-ui/core/Select';
 
 import useStyles from './ArticlesStyles';
 import { postRequest, putRequest } from '../../services/httpService';
@@ -30,15 +32,25 @@ const ArticleEditorDialog = (props) => {
     article ? article.edinecna_merka : ''
   );
   const [tarifenBroj, setTarifenBroj] = useState(
-    article ? article.tarifen_broj_ddv : ''
+    article ? article.tarifen_broj_ddv : 0
   );
   const [makedonskiProizvod, setMakedonskiProizvod] = useState(
     article && article.mkd_proizvod === 'DA' ? true : false
   );
 
+  useEffect(() => {
+    if (article) {
+      if (article.tarifen_broj_ddv === 5) {
+        setTarifenBroj(1);
+      } else if (article.tarifen_broj_ddv === 18) {
+        setTarifenBroj(2);
+      }
+    }
+  }, []);
+
   const onCreateArticle = async (path, body) => {
     const result = await postRequest(path, body);
-    if (result.status === 200) {
+    if (result.status === 200 || result.status === 201) {
       setTimeout(() => {
         setIsLoading(false);
         handleClose('create');
@@ -47,8 +59,11 @@ const ArticleEditorDialog = (props) => {
   };
 
   const onUpdateArticle = async (path, body, params) => {
+    console.log('onUpdateArticle body ', body);
+    console.log('onUpdateArticle params ', params);
     const result = await putRequest(path, body, params);
-    if (result.status === 200) {
+    console.log('onUpdateArticle result ', result);
+    if (result.status === 200 || result.status === 201) {
       setTimeout(() => {
         setIsLoading(false);
         handleClose('update');
@@ -63,11 +78,11 @@ const ArticleEditorDialog = (props) => {
       case 'ime':
         return setIme(event.target.value);
       case 'cena':
-        return setCena(event.target.value);
+        return setCena(+event.target.value);
       case 'edinecnaMerka':
         return setEdinecnaMerka(event.target.value);
       case 'tarifenBroj':
-        return setTarifenBroj(event.target.value);
+        return setTarifenBroj(+event.target.value);
       default:
         return;
     }
@@ -86,9 +101,10 @@ const ArticleEditorDialog = (props) => {
       tarifen_broj_ddv: tarifenBroj,
       mkd_proizvod: makedonskiProizvod ? 'DA' : 'NE',
       cena,
-      datum: new Date(),
+      datum: formatDate(new Date()),
     };
 
+    console.log('article ', article);
     if (article) {
       onUpdateArticle('/articles', newArticle, `/${article.shifra}`);
     } else {
@@ -96,8 +112,26 @@ const ArticleEditorDialog = (props) => {
     }
   };
 
+  const formatDate = (date) => {
+    let d = new Date(date),
+      month = '' + (d.getMonth() + 1),
+      day = '' + d.getDate(),
+      year = d.getFullYear();
+
+    if (month.length < 2) month = '0' + month;
+    if (day.length < 2) day = '0' + day;
+
+    return [year, month, day].join('-');
+  };
+
   return (
-    <Dialog onClose={() => handleClose()} open={open} fullWidth maxWidth={'md'} disableBackdropClick={isLoading}>
+    <Dialog
+      onClose={() => handleClose()}
+      open={open}
+      fullWidth
+      maxWidth={'md'}
+      disableBackdropClick={isLoading}
+    >
       <div className={classes.dialog}>
         <Typography variant='h5'>
           {article ? article.ime : 'Kreiraj Nov Artikal'}
@@ -105,18 +139,20 @@ const ArticleEditorDialog = (props) => {
         <ValidatorForm ref={formRef} onSubmit={handleFormSubmit}>
           <Grid container spacing={8}>
             <Grid item sm={6} xs={12}>
-              <TextValidator
-                fullWidth
-                className={classes.dialogInput}
-                label='Shifra'
-                onChange={(event) => handleChange(event, 'shifra')}
-                type='text'
-                name='shifra'
-                value={shifra}
-                validators={['required']}
-                errorMessages={['poleto e zadolzhitelno']}
-                disabled={article !== null}
-              />
+              {article && (
+                <TextValidator
+                  fullWidth
+                  className={classes.dialogInput}
+                  label='Shifra'
+                  onChange={(event) => handleChange(event, 'shifra')}
+                  type='text'
+                  name='shifra'
+                  value={shifra}
+                  validators={['required']}
+                  errorMessages={['poleto e zadolzhitelno']}
+                  disabled
+                />
+              )}
               <TextValidator
                 fullWidth
                 className={classes.dialogInput}
@@ -128,17 +164,21 @@ const ArticleEditorDialog = (props) => {
                 validators={['required']}
                 errorMessages={['poleto e zadolzhitelno']}
               />
-              <TextValidator
-                fullWidth
-                className={classes.dialogInput}
-                label='Tarifen Broj (DDV) %'
-                onChange={(event) => handleChange(event, 'tarifenBroj')}
-                type='number'
-                name='tarifenBroj'
-                value={tarifenBroj}
-                validators={['required']}
-                errorMessages={['poleto e zadolzhitelno']}
-              />
+              <FormControl fullWidth className={classes.dialogInput}>
+                <Select
+                  value={tarifenBroj}
+                  defaultValue={tarifenBroj}
+                  onChange={(event) => handleChange(event, 'tarifenBroj')}
+                  displayEmpty
+                  className={classes.selectEmpty}
+                  inputProps={{ 'aria-label': 'Without label' }}
+                >
+                  <MenuItem value={0}>0%</MenuItem>
+                  <MenuItem value={1}>5%</MenuItem>
+                  <MenuItem value={2}>18%</MenuItem>
+                </Select>
+                <FormHelperText>Tarifen broj (DDV) %</FormHelperText>
+              </FormControl>
             </Grid>
 
             <Grid item sm={6} xs={12}>
@@ -152,6 +192,7 @@ const ArticleEditorDialog = (props) => {
                 value={ime}
                 validators={['required']}
                 errorMessages={['poleto e zadolzhitelno']}
+                multiline
               />
               <TextValidator
                 fullWidth
@@ -161,7 +202,6 @@ const ArticleEditorDialog = (props) => {
                 type='text'
                 name='edinecnaMerka'
                 value={edinecnaMerka}
-                validators={['required']}
                 errorMessages={['poleto e zadolzhitelno']}
               />
               <FormControlLabel

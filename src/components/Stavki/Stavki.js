@@ -1,5 +1,4 @@
 import React, { useState, useCallback, useEffect } from 'react';
-import { useHistory } from 'react-router-dom';
 import {
   IconButton,
   Table,
@@ -18,32 +17,34 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import Snackbar from '@material-ui/core/Snackbar';
 import MuiAlert from '@material-ui/lab/Alert';
 
-import { getRequest } from '../../../services/httpService';
-import useStyles from './styles';
-import ConfirmationDialog from '../../UI/ConfirmationDialog';
+import { getRequest } from '../../services/httpService';
+import useStyles from './StavkiStyles';
+// import ArticleEditorDialog from './ArticleEditorDialog';
+import ConfirmationDialog from '../UI/ConfirmationDialog';
 
-const DelovniPartneriForm = (props) => {
+const Stavki = (props) => {
   const classes = useStyles();
-  const history = useHistory();
 
-  const [partners, setPartners] = useState([]);
+  const [stavki, setStavki] = useState([]);
+  const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [openSnackbarDelete, setOpenSnackbarDelete] = useState(false);
   const [search, setSearch] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [page, setPage] = useState(0);
-
+  const [shouldOpenEditorDialog, setShouldOpenEditorDialog] = useState(false);
   const [shouldOpenDeleteDialog, setShouldOpenDeleteDialog] = useState(false);
-  const [partnerToDelete, setPartnerToDelete] = useState(null);
-  const [openSnackbarDelete, setOpenSnackbarDelete] = useState(false);
-  const [errorMessage, setErrorMessage] = useState('');
+  const [currentStavka, setCurrentStavka] = useState(null);
 
   useEffect(() => {
-    onFetchPartners();
+    onFetchStavki();
   }, []);
 
-  const onFetchPartners = useCallback(async () => {
-    const result = await getRequest('/delovniPartneri');
+  const onFetchStavki = useCallback(async () => {
+    const result = await getRequest('/stavki');
     if (result.status === 200) {
-      setPartners(result.data);
+      setStavki(result.data);
     }
   }, []);
 
@@ -59,35 +60,56 @@ const DelovniPartneriForm = (props) => {
     setRowsPerPage(event.target.value);
   };
 
-  const redirectToCreatePartner = () => {
-    let path = `/delovniPartneri/create`;
-    history.push(path);
+  const onCreateStavka = () => {
+    setCurrentStavka(null);
+    setShouldOpenEditorDialog(true);
   };
 
-  const editPartner = (event, partner) => {
-    event.stopPropagation();
-    let path = `/delovniPartneri/create`;
-    history.push(path, partner);
+  const onEditStavka = (stavka) => {
+    setCurrentStavka(stavka);
+    setShouldOpenEditorDialog(true);
   };
 
-  const onDeletePartner = (event, partner) => {
+  const onDeleteStavka = (event, stavka) => {
     event.stopPropagation();
-    setPartnerToDelete(partner);
+    setCurrentStavka(stavka);
     setShouldOpenDeleteDialog(true);
   };
 
+  const handleDialogClose = (type) => {
+    if (type !== undefined) {
+      setSuccessMessage(
+        type === 'create'
+          ? 'Stavkata e uspeshno kreirana!'
+          : 'Stavkata e uspeshno promeneta!'
+      );
+      setOpenSnackbar(true);
+      onFetchStavki();
+    }
+    setShouldOpenEditorDialog(false);
+  };
+
   const handleDeleteDialogClose = (type = '') => {
-    onFetchPartners();
+    console.log('HANDLE CLOSE TYPE ', type);
+    onFetchStavki();
     setShouldOpenDeleteDialog(false);
     if (type === 'error') {
       console.log('TYPE Error ', type);
-      setErrorMessage('Greshka pri brishenje na partner');
+      setErrorMessage('Greshka pri brishenje na stavka');
       setOpenSnackbarDelete(true);
     }
   };
 
   const Alert = (props) => {
     return <MuiAlert elevation={6} variant='filled' {...props} />;
+  };
+
+  const handleCloseSnackbar = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    setOpenSnackbar(false);
   };
 
   const handleCloseSnackbarDelete = (event, reason) => {
@@ -99,29 +121,33 @@ const DelovniPartneriForm = (props) => {
   };
 
   return (
-    <React.Fragment>
+    <div className={classes.container}>
+      <Typography variant='h5' className={classes.title}>
+        Stavki
+      </Typography>
       <div className={classes.searchContainer}>
         <Button
           variant='contained'
           color='secondary'
-          onClick={() => redirectToCreatePartner()}
+          onClick={() => onCreateStavka()}
         >
-          Kreiraj Nov Partner
+          Kreiraj Nova Stavka
         </Button>
 
         <form noValidate autoComplete='off'>
           <TextField
-            id='filter-partners'
-            label='Prebaruvaj Partneri'
+            id='filter-stavki'
+            label='Prebaruvaj Stavki'
             fullWidth
             value={search}
             onChange={(e) => handleSearch(e.target.value)}
           />
         </form>
       </div>
-      {partners.length === 0 ? (
+
+      {stavki.length === 0 ? (
         <Typography variant='h6' style={{ marginTop: 30 }}>
-          Ne se pronajdeni delovni partneri vo databazata.
+          Ne se pronajdeni stavki vo databazata.
         </Typography>
       ) : (
         <Card className={classes.card} elevation={6}>
@@ -135,63 +161,71 @@ const DelovniPartneriForm = (props) => {
                   <Typography variant='subtitle2'>Shifra</Typography>
                 </TableCell>
                 <TableCell>
-                  <Typography variant='subtitle2'>Ime</Typography>
+                  <Typography variant='subtitle2'>RBS</Typography>
                 </TableCell>
                 <TableCell>
-                  <Typography variant='subtitle2'>Telefonski Broj</Typography>
+                  <Typography variant='subtitle2'>Artikal (shifra)</Typography>
                 </TableCell>
                 <TableCell>
-                  <Typography variant='subtitle2'>Adresa</Typography>
+                  <Typography variant='subtitle2'>Kolicina</Typography>
                 </TableCell>
                 <TableCell>
-                  <Typography variant='subtitle2'>Banka Deponent</Typography>
+                  <Typography variant='subtitle2'>DDV(%)</Typography>
                 </TableCell>
                 <TableCell>
-                  <Typography variant='subtitle2'>EDB</Typography>
+                  <Typography variant='subtitle2'>Cena bez DDV</Typography>
                 </TableCell>
                 <TableCell>
-                  <Typography variant='subtitle2'>Korekcija</Typography>
+                  <Typography variant='subtitle2'>Cena so DDV</Typography>
+                </TableCell>
+                <TableCell>
+                  <Typography variant='subtitle2'>Akcija</Typography>
                 </TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              {partners
-                .sort((a, b) => (a.shifra < b.shifra ? 1 : -1))
+              {stavki
+                .reverse()
                 .filter(
-                  (partner) =>
-                    partner.shifra
+                  (item) =>
+                    item.shifra
                       .toString()
                       .toLowerCase()
                       .indexOf(search.toLowerCase()) !== -1 ||
-                    partner.ime.toLowerCase().indexOf(search.toLowerCase()) !==
-                      -1
+                    item.artikal
+                      .toString()
+                      .toLowerCase()
+                      .indexOf(search.toLowerCase()) !== -1
                 )
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                .map((partner, index) => (
+                .map((item, index) => (
                   <TableRow
-                    key={partner.shifra}
+                    key={item.shifra}
                     className={classes.tableRow}
-                    onClick={(event) => editPartner(event, partner)}
+                    onClick={() => onEditStavka(item)}
                   >
-                    <TableCell>{partner.shifra}</TableCell>
+                    <TableCell align='left'>{item.shifra}</TableCell>
                     <TableCell
                       align='left'
                       style={{ whiteSpace: 'normal', wordWrap: 'break-word' }}
                     >
-                      {partner.ime}
+                      {item.rbs}
                     </TableCell>
-                    <TableCell>{partner.telefonski_broj}</TableCell>
-                    <TableCell>{partner.adresa}</TableCell>
-                    <TableCell>{partner.banka_deponent}</TableCell>
-                    <TableCell>{partner.edb}</TableCell>
-                    <TableCell>
-                      <IconButton
-                        onClick={(event) => editPartner(event, partner)}
-                      >
+                    <TableCell align='left'>{item.artikal}</TableCell>
+                    <TableCell align='left'>{item.kolicina}</TableCell>
+                    <TableCell>{item.ddv}%</TableCell>
+                    <TableCell className='px-0' align='left'>
+                      {item.vkupnaCenaBezDdv} MKD
+                    </TableCell>
+                    <TableCell className='px-0' align='left'>
+                      {item.iznos} MKD
+                    </TableCell>
+                    <TableCell className='px-0 border-none'>
+                      <IconButton onClick={() => onEditStavka(item)}>
                         <EditIcon color='secondary'>edit</EditIcon>
                       </IconButton>
                       <IconButton
-                        onClick={(event) => onDeletePartner(event, partner)}
+                        onClick={(event) => onDeleteStavka(event, item)}
                       >
                         <DeleteIcon color='error'>delete</DeleteIcon>
                       </IconButton>
@@ -205,7 +239,7 @@ const DelovniPartneriForm = (props) => {
             className='px-16'
             rowsPerPageOptions={[5, 10, 25]}
             component='div'
-            count={partners.length}
+            count={stavki.length}
             rowsPerPage={rowsPerPage}
             page={page}
             backIconButtonProps={{
@@ -219,16 +253,32 @@ const DelovniPartneriForm = (props) => {
           />
         </Card>
       )}
+      {/* {shouldOpenEditorDialog && (
+        <ArticleEditorDialog
+          handleClose={handleDialogClose}
+          open={shouldOpenEditorDialog}
+          article={currentStavka}
+        />
+      )} */}
       {shouldOpenDeleteDialog && (
         <ConfirmationDialog
           open={shouldOpenDeleteDialog}
           handleClose={handleDeleteDialogClose}
           onYesClick={() => {}}
-          text='Дали сигурно сакате да го избришете партнерот ?'
-          item={partnerToDelete}
-          path='delovniPartneri'
+          text='Дали сигурно сакате да ја избришете ставката ?'
+          item={currentStavka}
+          path='stavki'
         />
       )}
+      <Snackbar
+        open={openSnackbar}
+        autoHideDuration={3000}
+        onClose={handleCloseSnackbar}
+      >
+        <Alert onClose={handleCloseSnackbar} severity='success'>
+          {successMessage}
+        </Alert>
+      </Snackbar>
 
       <Snackbar
         open={openSnackbarDelete}
@@ -239,8 +289,8 @@ const DelovniPartneriForm = (props) => {
           {errorMessage}
         </Alert>
       </Snackbar>
-    </React.Fragment>
+    </div>
   );
 };
 
-export default DelovniPartneriForm;
+export default Stavki;

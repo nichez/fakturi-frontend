@@ -27,18 +27,19 @@ const DelovniPartneriCreate = (props) => {
     location.state ? location.state.adresa : ''
   );
   const [telefonskiBroj, setTelefonskiBroj] = useState(
-    location.state ? location.state.telefonskiBroj : ''
+    location.state ? location.state.telefonski_broj : ''
   );
   const [bankaDeponent, setBankaDeponent] = useState(
-    location.state ? location.state.bankaDeponent : ''
+    location.state ? location.state.banka_deponent : ''
   );
-  const [edb, setEdb] = useState(
-    location.state ? location.state.edb : ''
-  );
+  const [edb, setEdb] = useState(location.state ? location.state.edb : '');
+
+  console.log('location state', location.state);
+  console.log('location partner', props.partner);
 
   const onCreatePartner = async (path, body) => {
     const result = await postRequest(path, body);
-    if (result.status === 200) {
+    if (result.status === 200 || result.status === 201) {
       setTimeout(() => {
         setIsLoading(false);
         setShifra('');
@@ -48,7 +49,7 @@ const DelovniPartneriCreate = (props) => {
         setBankaDeponent('');
         setEdb('');
         setSuccessMessage(
-            location.state
+          location.state
             ? 'Delovniot partner e uspeshno promenet!'
             : 'Delovniot partner e uspeshno kreiran!'
         );
@@ -59,15 +60,9 @@ const DelovniPartneriCreate = (props) => {
 
   const onUpdatePartner = async (path, body, params) => {
     const result = await putRequest(path, body, params);
-    if (result.status === 200) {
+    if (result.status === 200 || result.status === 201) {
       setTimeout(() => {
         setIsLoading(false);
-        setShifra('');
-        setIme('');
-        setAdresa('');
-        setTelefonskiBroj('');
-        setBankaDeponent('');
-        setEdb('');
         setSuccessMessage(
           !location.state
             ? 'Delovniot partner e uspeshno kreiran!'
@@ -86,7 +81,7 @@ const DelovniPartneriCreate = (props) => {
       adresa,
       telefonski_broj: telefonskiBroj,
       banka_deponent: bankaDeponent,
-      edb
+      edb,
     };
 
     if (location.state) {
@@ -112,6 +107,8 @@ const DelovniPartneriCreate = (props) => {
         return setTelefonskiBroj(event.target.value);
       case 'bankaDeponent':
         return setBankaDeponent(event.target.value);
+      case 'edb':
+        return setEdb(event.target.value);
       default:
         return;
     }
@@ -145,17 +142,18 @@ const DelovniPartneriCreate = (props) => {
         >
           <Grid container spacing={6}>
             <Grid item lg={6} md={6} sm={12} xs={12}>
-              <TextValidator
-                className={classes.inputField}
-                fullWidth
-                label='Shifra'
-                onChange={(event) => handleChange(event, 'shifra')}
-                type='text'
-                name='shifra'
-                value={shifra}
-                validators={['required']}
-                errorMessages={['poleto e zadolzhitelno']}
-              />
+              {location.state && (
+                <TextValidator
+                  className={classes.inputField}
+                  fullWidth
+                  label='Shifra'
+                  onChange={(event) => handleChange(event, 'shifra')}
+                  type='text'
+                  name='shifra'
+                  value={shifra}
+                  disabled
+                />
+              )}
               <TextValidator
                 className={classes.inputField}
                 fullWidth
@@ -191,6 +189,7 @@ const DelovniPartneriCreate = (props) => {
                 value={ime}
                 validators={['required']}
                 errorMessages={['poleto e zadolzhitelno']}
+                multiline
               />
               <TextValidator
                 className={classes.inputField}

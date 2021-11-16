@@ -1,7 +1,18 @@
 import { makeStyles } from '@material-ui/core/styles';
 
 const useStyles = makeStyles((theme) => ({
-  //Invoice Editor
+  content: {
+    flexGrow: 1,
+    padding: theme.spacing(3),
+    marginTop: 60
+    // marginInline: 80,
+    // marginBlock: 100
+  },
+  topRow: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
   rightButttons: {
     display: 'flex',
     justifyContent: 'flex-end',
@@ -10,24 +21,18 @@ const useStyles = makeStyles((theme) => ({
   cancelButton: {
     marginRight: 16,
   },
-  orderInfo: {
+  fakturaInfo: {
     display: 'flex',
     justifyContent: 'space-between',
-  },
-  inputField: {
-    marginTop: 16,
-  },
-  formControls: {
-    width: '100%',
   },
   textAlignRight: {
     textAlign: 'right',
   },
-  fontWeightNormal: {
-    fontWeight: 'normal',
-  },
   divider: {
     marginTop: 20,
+  },
+  inputField: {
+    marginTop: 16,
   },
   table: {
     marginTop: 20,
@@ -58,14 +63,6 @@ const useStyles = makeStyles((theme) => ({
   datePicker: {
     marginTop: 16,
   },
-  //new invoice editor
-  partnerContainer: {
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'flex-start',
-    alignItems: 'center',
-    marginTop: 16,
-  }
 }));
 
 export default useStyles;

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useHistory } from 'react-router-dom';
 import clsx from 'clsx';
 import { makeStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
@@ -6,26 +7,27 @@ import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import IconButton from '@material-ui/core/IconButton';
 import MenuIcon from '@material-ui/icons/Menu';
-import InputLabel from '@material-ui/core/InputLabel';
-import MenuItem from '@material-ui/core/MenuItem';
-import Avatar from '@material-ui/core/Avatar';
-import FormControl from '@material-ui/core/FormControl';
-import Select from '@material-ui/core/Select';
-import { useTranslation } from 'react-i18next';
+import Button from '@material-ui/core/Button';
 
 const drawerWidth = 240;
 
 const Header = (props) => {
   const classes = useStyles();
-  const [language, setLanguage] = useState('mk');
-  const { t, i18n } = useTranslation();
+  const history = useHistory();
 
   const { openSidebar, open } = props;
 
-  const onLanguageSelect = (lang) => {
-    console.log('lang select ', lang)
-    setLanguage(lang);
-    i18n.changeLanguage(lang);
+  const [username, setUsername] = useState(localStorage.getItem('username'));
+
+  const redirectToLogin = () => {
+    let path = '/';
+    history.replace(path);
+  };
+
+  const logout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('username');
+    redirectToLogin();
   };
 
   return (
@@ -45,37 +47,25 @@ const Header = (props) => {
           >
             <MenuIcon />
           </IconButton>
+          <img
+            src='/assets/images/logo-placeholder.jpg'
+            alt='logo'
+            style={{ width: 60, height: 60 }}
+          />
           <Typography variant='h6' noWrap className={classes.textColor}>
-            Invoice Management Application
+            Ime Na Firma
           </Typography>
         </div>
-        {/* <div>
-          <FormControl className={classes.formControl}>
-            <Select
-              labelId='Language'
-              id='language-picker'
-              value={language}
-              // onChange={() => {}}
-            >
-              <MenuItem value={'mk'} onClick={() => onLanguageSelect('mk')}>
-                <Avatar
-                  style={{ width: 25, height: 15 }}
-                  variant='square'
-                  alt='Macedonia'
-                  src='https://upload.wikimedia.org/wikipedia/commons/thumb/7/79/Flag_of_North_Macedonia.svg/1280px-Flag_of_North_Macedonia.svg.png'
-                />
-              </MenuItem>
-              <MenuItem value={'en'} onClick={() => onLanguageSelect('en')}>
-                <Avatar
-                  style={{ width: 25, height: 15 }}
-                  variant='square'
-                  alt='English'
-                  src='https://cdn.britannica.com/79/4479-050-6EF87027/flag-Stars-and-Stripes-May-1-1795.jpg'
-                />
-              </MenuItem>
-            </Select>
-          </FormControl>
-        </div> */}
+        <div className={classes.toolbarRightSide}>
+          <div className={classes.username}>
+            <Typography variant='body2' noWrap className={classes.textColor}>
+              Hello {username}
+            </Typography>
+          </div>
+          <Button color='primary' type='button' fullWidth onClick={logout}>
+            Logout
+          </Button>
+        </div>
       </Toolbar>
     </AppBar>
   );
@@ -114,6 +104,15 @@ const useStyles = makeStyles((theme) => ({
   },
   textColor: {
     color: theme.palette.primary.main,
+  },
+  toolbarRightSide: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  username: {
+    marginRight: 20,
   },
 }));
 

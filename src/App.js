@@ -7,13 +7,22 @@ import useMediaQuery from '@material-ui/core/useMediaQuery';
 
 import Header from './components/Header/Header';
 import Sidebar from './components/Sidebar/Sidebar';
+import Login from './components/Auth/Login/Login';
 
 const PrometList = React.lazy(() => {
   return import('./components/Promet/PrometList/PrometList');
 });
 
 const PrometDetails = React.lazy(() => {
-  return import('./components/Promet/InvoiceDetails');
+  return import('./components/Promet/PrometDetails/PrometDetails');
+});
+
+const AddPromet = React.lazy(() => {
+  return import('./components/Promet/AddPromet/AddPromet');
+});
+
+const EditPromet = React.lazy(() => {
+  return import('./components/Promet/EditPromet/EditPromet');
 });
 
 const Articles = React.lazy(() => {
@@ -21,11 +30,23 @@ const Articles = React.lazy(() => {
 });
 
 const DelovniPartneriCreate = React.lazy(() => {
-  return import('./components/DelovniPartneri/DelovniPartneriCreate/DelovniPartneriCreate');
+  return import(
+    './components/DelovniPartneri/DelovniPartneriCreate/DelovniPartneriCreate'
+  );
 });
 
 const DelovniPartneriList = React.lazy(() => {
-  return import('./components/DelovniPartneri/DelovniPartneriList/DelovniPartneriList');
+  return import(
+    './components/DelovniPartneri/DelovniPartneriList/DelovniPartneriList'
+  );
+});
+
+const Stavki = React.lazy(() => {
+  return import('./components/Stavki/Stavki');
+});
+
+const Prikaz = React.lazy(() => {
+  return import('./components/Prikaz/Prikaz');
 });
 
 const drawerWidth = 240;
@@ -36,7 +57,7 @@ function App() {
   const minWidthForSidebar = useMediaQuery('(min-width:800px)');
 
   let routes = null;
-  let isAuth = true;
+  let isAuth = localStorage.getItem('token') !== null;
 
   const handleSidebarOpen = () => {
     console.log('handleSidebarOpen', open);
@@ -59,8 +80,20 @@ function App() {
         render={(props) => <PrometList {...props} />}
       ></Route>
       <Route
-        path='/promet/:id'
+        path='/promet/list/:vid'
+        render={(props) => <PrometList {...props} />}
+      ></Route>
+      <Route
+        path='/promet/add'
+        render={(props) => <AddPromet {...props} />}
+      ></Route>
+      <Route
+        path='/promet/details/:id'
         render={(props) => <PrometDetails {...props} />}
+      ></Route>
+      <Route
+        path='/promet/:id'
+        render={(props) => <EditPromet {...props} />}
       ></Route>
       <Route
         path='/delovniPartneri/list'
@@ -70,11 +103,20 @@ function App() {
         path='/delovniPartneri/create'
         render={(props) => <DelovniPartneriCreate {...props} />}
       ></Route>
-      <Redirect to='/promet/list' />
+      <Route
+        path='/stavki/list'
+        render={(props) => <Stavki {...props} />}
+      ></Route>
+      <Route path='/prikaz' render={(props) => <Prikaz {...props} />}></Route>
+      {/* <Route
+        path='/login'
+        render={(props) => <Login {...props} />}
+      ></Route> */}
+      <Redirect to='/promet/list/fakturi' />
     </Switch>
   );
 
-  return (
+  return isAuth ? (
     <div className={classes.root}>
       <CssBaseline />
       <div className={classes.drawerHeader} />
@@ -85,7 +127,7 @@ function App() {
           open={open}
         />
       )}
-      {minWidthForSidebar && (
+      {isAuth && minWidthForSidebar && (
         <Sidebar
           openSidebar={handleSidebarOpen}
           closeSidebar={handleSidebarClose}
@@ -100,6 +142,8 @@ function App() {
         <Suspense fallback={<p>Loading...</p>}>{routes}</Suspense>
       </main>
     </div>
+  ) : (
+    <Login />
   );
 }
 
