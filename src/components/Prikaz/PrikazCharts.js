@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useContext } from 'react';
 import Paper from '@material-ui/core/Paper';
 import {
   Chart,
@@ -14,7 +14,6 @@ import { withStyles } from '@material-ui/core/styles';
 import { Stack, Animation, EventTracker } from '@devexpress/dx-react-chart';
 
 import useStyles from './styles';
-import { olimpicMedals as demoData } from './demo-data';
 import { PrikazContext } from './PrikazContext';
 
 const legendStyles = () => ({

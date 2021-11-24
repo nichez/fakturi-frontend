@@ -9,7 +9,6 @@ import {
   TablePagination,
   Card,
   Typography,
-  TextField,
 } from '@material-ui/core';
 
 import useStyles from './styles';
