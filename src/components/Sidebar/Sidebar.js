@@ -202,32 +202,6 @@ const Sidebar = (props) => {
             </ListItem>
           </NavLink>
 
-          {/* <NavLink to={{ pathname: '/stavki/list' }} className={classes.link}>
-            <ListItem
-              button
-              key={1}
-              selected={location.pathname === '/stavki/list'}
-              style={{
-                backgroundColor:
-                  location.pathname === '/stavki/list'
-                    ? 'rgba(223, 242, 239, 0.7)'
-                    : null,
-                color:
-                  location.pathname === '/stavki/list'
-                    ? 'rgb(12, 19, 20)'
-                    : null,
-                borderRadius: 10,
-              }}
-            >
-              <ListItemIcon className={classes.icon}>
-                <FormatListNumberedIcon
-                  color={location.pathname === '/stavki/list' ? 'primary' : ''}
-                />
-              </ListItemIcon>
-              <ListItemText primary='Stavki' />
-            </ListItem>
-          </NavLink> */}
-
           <NavLink to={{ pathname: '/prikaz' }} className={classes.link}>
             <ListItem
               button

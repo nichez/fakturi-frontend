@@ -23,18 +23,23 @@ const legendStyles = () => ({
     flexDirection: 'row',
   },
 });
+
 const legendRootBase = ({ classes, ...restProps }) => (
   <Legend.Root {...restProps} className={classes.root} />
 );
+
 const Root = withStyles(legendStyles, { name: 'LegendRoot' })(legendRootBase);
+
 const legendLabelStyles = () => ({
   label: {
     whiteSpace: 'nowrap',
   },
 });
+
 const legendLabelBase = ({ classes, ...restProps }) => (
   <Legend.Label className={classes.label} {...restProps} />
 );
+
 const Label = withStyles(legendLabelStyles, { name: 'LegendLabel' })(
   legendLabelBase
 );
@@ -44,15 +49,13 @@ const PrikazCharts = () => {
 
   const { prometValue, searchValue } = useContext(PrikazContext);
 
-  const [promet, setPromet] = prometValue;
-  const [search, setSearch] = searchValue;
+  const [promet] = prometValue;
+  const [search] = searchValue;
 
   const upsert = (array, item) => {
-    // (1)
     const i = array.findIndex((_item) => _item.godina === item.godina);
     console.log('i ', i);
     if (i > -1) array[i].iznos += item.iznos;
-    // (2)
     else array.push(item);
   };
 

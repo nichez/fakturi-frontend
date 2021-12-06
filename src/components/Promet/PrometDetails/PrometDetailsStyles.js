@@ -50,7 +50,17 @@ const useStyles = makeStyles((theme) => ({
     marginTop: 36,
   },
   fontWeightBold: {
-    fontWeight: 'bold'
+    fontWeight: 'bold',
+  },
+  logoTitleContainer: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  logo: {
+    width: 60,
+    heigth: 60
   }
 }));
 

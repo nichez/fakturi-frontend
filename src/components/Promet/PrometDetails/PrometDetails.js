@@ -148,7 +148,13 @@ const PrometDetails = (props) => {
             </Typography>
             <Typography variant='body2'># {brojNaFaktura}</Typography>
           </div>
-          <div>
+          <div className={classes.logoTitleContainer}>
+            <img
+              src='/assets/images/logo-placeholder.jpg'
+              alt='logo'             
+              id='logo-na-firma'
+              className={classes.logo}
+            />
             <Typography variant='h6'>Ime Na Firma</Typography>
           </div>
           <div className={classes.orderStatusContainer}>

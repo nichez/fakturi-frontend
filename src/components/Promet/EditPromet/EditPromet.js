@@ -131,6 +131,10 @@ const EditPromet = (props) => {
     setPartner(partner);
   };
 
+  const goBack = () => {
+    history.goBack();
+  };
+
   const redirectToFakturi = () => {
     let path = '/promet/list/fakturi';
     history.push(path);
@@ -304,7 +308,7 @@ const EditPromet = (props) => {
       setSuccessMessage('Prometot e uspeshno promenet!');
       setTimeout(() => {
         setLoading(false);
-        redirectToFakturi();
+        goBack();
       }, 2000);
     } else {
       setLoading(false);
@@ -383,7 +387,7 @@ const EditPromet = (props) => {
                   type='button'
                   className={classes.cancelButton}
                   variant='text'
-                  onClick={redirectToFakturi}
+                  onClick={goBack}
                 >
                   Cancel
                 </Button>

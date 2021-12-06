@@ -61,7 +61,6 @@ const PrikazFilters = () => {
     setVidNaPromet('');
     setGodina(null);
     setMesec(null);
-    setSitePartneri([]);
     setPartner('');
     setPromet([]);
   };

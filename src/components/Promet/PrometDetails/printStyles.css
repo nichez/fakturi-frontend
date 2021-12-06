@@ -1,5 +1,9 @@
+#logo-na-firma {
+  visibility: hidden;
+}
+
 @media print {
-  body * {
+  body {
     visibility: hidden;
   }
   #print-area * {
@@ -11,4 +15,9 @@
     top: 0;
     width: 100%;
   }
+}
+
+@page {
+  size: auto;
+  margin: 20px;
 }
